@@ -1,13 +1,20 @@
-package com.useraccount.di.framework;
+package com.useraccount.di.injector;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.management.RuntimeErrorException;
+
 import org.reflections.Reflections;
+
 import com.useraccount.di.framework.annotations.CustomComponent;
-import com.useraccount.di.framework.utils.*;
+import com.useraccount.di.framework.utils.ClassLoaderUtil;
+import com.useraccount.di.framework.utils.InjectionUtil;
 
 /**
  * Injector, to create objects for all @CustomService classes. autowire/inject
@@ -17,35 +24,15 @@ public class CustomInjector {
 	private Map<Class<?>, Class<?>> diMap;
 	private Map<Class<?>, Object> applicationScope;
 
-	private static CustomInjector injector;
-
-	private CustomInjector() {
+	public CustomInjector() {
 		super();
 		diMap = new HashMap<>();
 		applicationScope = new HashMap<>();
 	}
 
-	/**
-	 * Start application
-	 * 
-	 * @param mainClass
-	 */
-	public static void startApplication(Class<?> mainClass) {
+	public <T> T getService(Class<T> classz) {
 		try {
-			synchronized (CustomInjector.class) {
-				if (injector == null) {
-					injector = new CustomInjector();
-					injector.initFramework(mainClass);
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public static <T> T getService(Class<T> classz) {
-		try {
-			return injector.getBeanInstance(classz);
+			return this.getBeanInstance(classz);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,7 +42,7 @@ public class CustomInjector {
 	/**
 	 * initialize the injector framework
 	 */
-	private void initFramework(Class<?> mainClass)
+	public void initFramework(Class<?> mainClass)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
 		Class<?>[] classes = ClassLoaderUtil.getClasses(mainClass.getPackage().getName());
 		Reflections reflections = new Reflections(mainClass.getPackage().getName());
@@ -114,7 +101,7 @@ public class CustomInjector {
 		Set<Entry<Class<?>, Class<?>>> implementationClasses = diMap.entrySet().stream()
 				.filter(entry -> entry.getValue() == interfaceClass).collect(Collectors.toSet());
 		String errorMessage = "";
-		if (implementationClasses == null || implementationClasses.size() == 0) {
+		if (implementationClasses == null || implementationClasses.isEmpty()) {
 			errorMessage = "no implementation found for interface " + interfaceClass.getName();
 		} else if (implementationClasses.size() == 1) {
 			Optional<Entry<Class<?>, Class<?>>> optional = implementationClasses.stream().findFirst();

@@ -1,12 +1,12 @@
 package com.useraccount;
 
-import com.useraccount.di.framework.CustomInjector;
+import com.useraccount.application.CustomDemoApplication;
+import com.useraccount.di.framework.annotations.CustomApplication;
 
+@CustomApplication
 public class UserAccountApplication {
 
 	public static void main(String[] args) {
-		CustomInjector.startApplication(UserAccountApplication.class);
-
-		CustomInjector.getService(UserAccountClientComponent.class).displayUserAccount();
+		CustomDemoApplication.run(UserAccountApplication.class, args);
 	}
 }

@@ -1,14 +1,15 @@
-package com.useraccount;
+package com.useraccount.application;
 
 import com.useraccount.di.framework.annotations.*;
-import com.useraccount.services.*;
+import com.useraccount.services.AccountService;
+import com.useraccount.services.UserService;
 
 /**
  * Client class, havin userService and accountService expected to initialized by
  * CustomInjector.java
  */
 @CustomComponent
-public class UserAccountClientComponent {
+public class ClientApplicacation {
 
 	@CustomAutowired
 	private UserService userService;
@@ -23,6 +24,6 @@ public class UserAccountClientComponent {
 
 		Long accountNumber = accountService.getAccountNumber(username);
 
-		System.out.println("User Name: " + username + "Account Number: " + accountNumber);
+		System.out.println("\nUser Name: " + username + " Account Number: " + accountNumber);
 	}
 }
